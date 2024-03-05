@@ -5,7 +5,7 @@ fn main() {
     let first_snake = Snake::new(SIZE);
     let mut snakes = vec![first_snake];
     let mut counter = 0;
-    loop {
+    'solve: loop {
         println!("Step {counter}");
         println!("Snake 0: {:?}", snakes[0]);
         println!("Snake 0 score: {:?}\n", snakes[0].score());
@@ -15,7 +15,7 @@ fn main() {
             if snake.is_finished() {
                 println!("Snake Finished!");
                 println!("Snake State: {:?}", snake);
-                break;
+                break 'solve;
             }
             new_snakes.append(&mut snake.take_step());
         }
