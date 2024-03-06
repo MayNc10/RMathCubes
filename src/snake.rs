@@ -1,8 +1,13 @@
+use std::fmt::Debug;
+
 use crate::game::*;
 use crate::coordinate::Coordinate;
 use itertools::Itertools;
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub struct Snake {
     path: Vec<Coordinate>,
     game: Game,
@@ -48,15 +53,21 @@ impl Snake {
         });
         // Filter to just have the best
         let best = self.new_with_move(possible_moves[0]);
+        println!("\n** best score: {}", best.score());
         let best_score = best.score();
-        let possible_moves = possible_moves.iter()
+
+        let mut possible_moves = possible_moves.iter()
             .filter(|a| {
                 let new_a = self.new_with_move(**a);
+                println!("  score: {}, best: {}", new_a.score(), best_score);
                 new_a.score() == best_score
             })
-            .map(|a| self.new_with_move(*a))
+            .map(|a| {println!(".");  self.new_with_move(*a)})
             .collect::<Vec<_>>();
 
+        println!("  ~~~Move length: {}", possible_moves.len());
+
+        possible_moves.shuffle(&mut thread_rng());
         possible_moves
     }
     pub fn score(&self) -> usize {
@@ -78,5 +89,14 @@ impl Snake {
             .collect::<Vec<_>>();
         previous.push(*self.path.last().unwrap());
         Snake { path: previous, game: self.game.clone() }
+    }
+}
+
+impl Debug for Snake {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for (idx, coord) in self.path.iter().enumerate() {
+            writeln!(f, "#{}: {:?}", idx, coord)?;
+        }
+        write!(f, "{:?}", self.game)
     }
 }

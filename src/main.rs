@@ -22,38 +22,35 @@ fn main() {
         println!("Step {counter}, best = {shortest_snake}, num_snakes: {}", snakes.len());
         counter += 1;
         let mut new_snakes = vec![];
-        let mut snake_set = HashSet::new();
-        let new_snakes_iter = snakes.into_par_iter()
+        //let mut snake_set = HashSet::new();
+        let new_snakes_iter = snakes.into_iter()
             .map( |snake |{
-                snake.take_step()
+                let mut new_snakes = vec![snake];
+                while !new_snakes[0].is_finished() {
+                    println!("Num new snakes: {}", new_snakes.len() - 1);
+                    let mut spawned_snakes = new_snakes[0].take_step();
+                    if spawned_snakes.len() == 0 {
+                        println!("Error: no more snakes!");
+                        println!("Spawning snake: {:?}", new_snakes[0]);
+                        panic!();
+                    }
+                    // Reassign first snake as one we're updating
+                    let mut end = spawned_snakes.split_off(1);
+                    new_snakes[0] = spawned_snakes.pop().unwrap();
+                    new_snakes.append(&mut end);
+                }
+                new_snakes
             })
             .collect::<Vec<_>>();
-
-        for new_snake in new_snakes_iter {
-            //println!("New Snake: {:?}", new_snake);
-            for snake in new_snake {
-                if snake.is_finished() {
-                    if snake.len() < shortest_snake {
-                        shortest_snake = snake.len();
-                        println!("Shortest len: {}", shortest_snake);
-                        let mut file = OpenOptions::new()
-                            .write(true)
-                            .append(true)
-                            .open(&file_name)
-                            .unwrap();
-                        if let Err(e) = writeln!(file, "snake length: {}\n, snake: {:?}", snake.len(), snake) {
-                            eprintln!("Couldn't write to file: {}", e);
-                            panic!();
-                        }
-                        file.flush().unwrap();
-                    }
-                }
-
-                let snake = snake.clean();
-                let unique = snake_set.insert(snake.clone());
-                if unique && snake.len()  < shortest_snake && !snake.is_finished() {
-                    new_snakes.push(snake);
-                }
+        for mut snake in new_snakes_iter {
+            let mut new_snakes_inner = snake.split_off(1);
+            let snake = snake.pop().unwrap();
+            new_snakes.append(&mut new_snakes_inner);
+            if snake.len() < shortest_snake {
+                shortest_snake = snake.len();
+                println!("Shortest snake: {}", shortest_snake);
+                println!("Snake: {:?}", snake);
+                println!();
             }
         }
         snakes = new_snakes;
