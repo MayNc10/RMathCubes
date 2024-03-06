@@ -22,13 +22,21 @@ impl Snake {
         let mut possible_moves = vec![];
         let size = self.game.get_size();
         for i in -1..=1 {
-            for j in -1..=1 {
-                for k in -1..=1 {
-                    let new_coord = self.path.last().unwrap().add(i, j, k, size);
-                    if new_coord.is_some() {
-                        possible_moves.push(new_coord.unwrap());
-                    }
-                }
+            let new_coord = self.path.last().unwrap().add(i, 0, 0, size);
+            if new_coord.is_some() {
+                possible_moves.push(new_coord.unwrap());
+            }
+        }
+        for j in -1..=1 {
+            let new_coord = self.path.last().unwrap().add(0, j, 0, size);
+            if new_coord.is_some() {
+                possible_moves.push(new_coord.unwrap());
+            }
+        }
+        for k in -1..=1 {
+            let new_coord = self.path.last().unwrap().add(0, 0, k, size);
+            if new_coord.is_some() {
+                possible_moves.push(new_coord.unwrap());
             }
         }
         // Find the best move
