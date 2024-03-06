@@ -1,7 +1,8 @@
 use crate::game::*;
 use crate::coordinate::Coordinate;
+use itertools::Itertools;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Snake {
     path: Vec<Coordinate>,
     game: Game,
@@ -64,5 +65,18 @@ impl Snake {
     }
     pub fn is_finished(&self) -> bool {
         self.game.is_solved()
+    }
+    pub fn len(&self) -> usize {
+        self.path.len()
+    }
+    pub fn clean(&self) -> Snake {
+        // Remove all duplicate coordinates except for start
+        let mut previous = self.path[0..self.path.len() - 1]
+            .into_iter()
+            .unique()
+            .map(|c| *c)
+            .collect::<Vec<_>>();
+        previous.push(*self.path.last().unwrap());
+        Snake { path: previous, game: self.game.clone() }
     }
 }

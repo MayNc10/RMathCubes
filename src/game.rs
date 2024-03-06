@@ -27,7 +27,7 @@ where T: Eq + Sized
 impl<T> Eq for Pair<T> 
 where T: Eq + Sized {}
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Game {
     grid: Vec<Vec<Vec<bool>>>,
 }
