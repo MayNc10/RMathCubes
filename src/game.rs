@@ -88,4 +88,11 @@ impl Game {
     pub fn get_size(&self) -> usize {
         self.grid.len()
     }
+    pub fn num_cubes(&self) -> usize {
+        self.grid.iter()
+            .flatten()
+            .flatten()
+            .filter(|b| **b)
+            .count()
+    }
 }
