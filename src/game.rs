@@ -36,6 +36,9 @@ impl Game {
     pub fn new(size: usize) -> Game {
         Game { grid: vec![vec![vec![false; size]; size]; size] }
     }
+    pub fn new_filled(size: usize) -> Game {
+        Game { grid: vec![vec![vec![true; size]; size]; size] }
+    }
     pub fn new_with_initial(size: usize) -> Game {
         let mut grid = vec![vec![vec![false; size]; size]; size];
         grid[0][0][0] = true;
@@ -94,5 +97,14 @@ impl Game {
             .flatten()
             .filter(|b| **b)
             .count()
+    }
+    pub fn remove_cube(&mut self, cube: Coordinate) {
+        self.grid[cube.x][cube.y][cube.z] = false;
+    }
+    pub fn side_len(&self) -> usize {
+        self.grid.len()
+    }
+    pub fn grid(&mut self) -> &mut Vec<Vec<Vec<bool>>> {
+        &mut self.grid
     }
 }

@@ -1,3 +1,5 @@
+use removing_cubes::cube_remover;
+use removing_cubes::game::Game;
 use removing_cubes::snake::Snake;
 use std::collections::HashSet;
 use std::fs::{File, OpenOptions};
@@ -11,8 +13,7 @@ where T: std::hash::Hash + Eq
     v.extend(set.into_iter())
 }
 
-const SIZE: usize = 4;
-fn main() {
+pub fn play_snake() {
     let first_snake = Snake::new(SIZE);
     let mut snakes = vec![first_snake];
     let mut counter = 0;
@@ -66,4 +67,12 @@ fn main() {
         dedup(&mut snakes);
         Snake::cull_snakes(&mut snakes, shortest_snake);
     }
+}
+
+const SIZE: usize = 3;
+fn main() {
+    let mut game = Game::new_filled(SIZE);
+    while cube_remover::remove_cube(&mut game) {}
+    println!("Game size: {}", game.num_cubes());
+    println!("Game: {:?}", game);
 }
